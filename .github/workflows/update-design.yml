@@ -10,23 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Шаг 1: Клонирование репозитория
+      # Шаг 1: Настройка SSH-ключа
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      # Шаг 2: Клонирование репозитория
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }} # Используем SSH-ключ
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Шаг 2: Установка Node.js
+      # Шаг 3: Установка Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # Шаг 3: Установка зависимостей
+      # Шаг 4: Установка зависимостей
       - name: Install dependencies
         run: npm install axios
 
-      # Шаг 4: Создание файла скрипта для Node.js
+      # Шаг 5: Создание файла скрипта для Node.js
       - name: Create Node.js script
         run: |
           cat <<EOF > export-resources.js
@@ -59,14 +68,14 @@ jobs:
           exportResources();
           EOF
 
-      # Шаг 5: Выполнение Node.js скрипта
+      # Шаг 6: Выполнение Node.js скрипта
       - name: Run Node.js script
         env:
           FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
           FIGMA_FILE_ID: ${{ secrets.FIGMA_FILE_ID }}
         run: node export-resources.js
 
-      # Шаг 6: Коммит изменений
+      # Шаг 7: Коммит изменений
       - name: Commit changes
         run: |
           git config --global user.name "GitHub Actions"
