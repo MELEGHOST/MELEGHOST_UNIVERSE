@@ -24,13 +24,10 @@ jobs:
       - name: Install dependencies
         run: npm install axios
 
-      # Шаг 4: Экспорт ресурсов из Figma
-      - name: Export resources from Figma
-        env:
-          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
-          FIGMA_FILE_ID: ${{ secrets.FIGMA_FILE_ID }}
+      # Шаг 4: Создание файла скрипта для Node.js
+      - name: Create Node.js script
         run: |
-          # Используем Node.js для запроса к API Figma
+          cat <<EOF > export-resources.js
           const axios = require('axios');
           const fs = require('fs');
 
@@ -40,7 +37,7 @@ jobs:
           const exportResources = async () => {
             try {
               console.log('Fetching data from Figma...');
-              const response = await axios.get(`https://api.figma.com/v1/files/${FIGMA_FILE_ID}`, {
+              const response = await axios.get(\`https://api.figma.com/v1/files/\${FIGMA_FILE_ID}\`, {
                 headers: { 'X-Figma-Token': FIGMA_TOKEN },
               });
 
@@ -58,8 +55,16 @@ jobs:
           };
 
           exportResources();
-      
-      # Шаг 5: Коммит изменений
+          EOF
+
+      # Шаг 5: Выполнение Node.js скрипта
+      - name: Run Node.js script
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+          FIGMA_FILE_ID: ${{ secrets.FIGMA_FILE_ID }}
+        run: node export-resources.js
+
+      # Шаг 6: Коммит изменений
       - name: Commit changes
         run: |
           git config --global user.name "GitHub Actions"
