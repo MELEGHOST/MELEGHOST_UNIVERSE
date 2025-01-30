@@ -13,51 +13,71 @@ const exportResources = async () => {
       headers: { 'X-Figma-Token': FIGMA_TOKEN },
     });
 
-    console.log('Figma file structure:', JSON.stringify(fileResponse.data, null, 2));
+    console.log('Figma file loaded successfully.');
+    console.log(`File name: ${fileResponse.data.name}`);
+    console.log(`Last modified: ${fileResponse.data.lastModified}`);
 
-    // Извлекаем все фреймы
-    const frames = fileResponse.data.document.children.filter(child => child.type === 'CANVAS');
-    console.log(`Found ${frames.length} frames.`);
+    // Извлекаем все страницы
+    const pages = fileResponse.data.document.children.filter(child => child.type === 'CANVAS');
+    console.log(`Found ${pages.length} pages.`);
 
-    if (frames.length === 0) {
-      throw new Error('No frames found in the Figma file.');
+    if (pages.length === 0) {
+      throw new Error('No pages found in the Figma file.');
     }
 
-    // Проходимся по всем фреймам
-    for (let i = 0; i < frames.length; i++) {
-      const frame = frames[i];
-      const frameId = frame.id;
-      console.log(`Processing frame ${i + 1}: ID=${frameId}, Name=${frame.name}`);
+    let frameCount = 0; // Счётчик фреймов
 
-      // Шаг 2: Экспорт изображения фрейма
-      const imageResponse = await axios.get(
-        `https://api.figma.com/v1/images/${FIGMA_FILE_ID}?ids=${frameId}&format=png`,
-        {
-          headers: { 'X-Figma-Token': FIGMA_TOKEN },
-        }
-      );
+    // Проходимся по всем страницам
+    for (const page of pages) {
+      console.log(`Processing page: ${page.name}`);
 
-      console.log(`Image export response for frame ${i + 1}:`, JSON.stringify(imageResponse.data, null, 2));
+      // Извлекаем все фреймы на странице
+      const frames = page.children.filter(child => child.type === 'FRAME');
+      console.log(`Found ${frames.length} frames on page ${page.name}.`);
 
-      // Проверяем, есть ли URL изображения
-      if (!imageResponse.data.images || !imageResponse.data.images[frameId]) {
-        console.error(`Image URL not found for frame ${i + 1}. Skipping...`);
+      if (frames.length === 0) {
+        console.log(`No frames found on page ${page.name}. Skipping...`);
         continue;
       }
 
-      const imageUrl = imageResponse.data.images[frameId];
-      console.log(`Downloading image for frame ${i + 1} from: ${imageUrl}`);
+      // Проходимся по всем фреймам
+      for (const frame of frames) {
+        frameCount++;
+        const frameId = frame.id;
+        console.log(`Processing frame ${frameCount}: ID=${frameId}, Name=${frame.name}`);
 
-      // Шаг 3: Скачиваем изображение
-      const imageDownload = await axios({
-        url: imageUrl,
-        responseType: 'arraybuffer',
-      });
+        // Шаг 2: Экспорт изображения фрейма
+        const imageResponse = await axios.get(
+          `https://api.figma.com/v1/images/${FIGMA_FILE_ID}?ids=${frameId}&format=png`,
+          {
+            headers: { 'X-Figma-Token': FIGMA_TOKEN },
+          }
+        );
 
-      // Сохраняем изображение в файл
-      const fileName = `frame-${i + 1}-${frame.name.replace(/\s+/g, '-').toLowerCase()}.png`;
-      fs.writeFileSync(fileName, imageDownload.data);
-      console.log(`Image saved as ${fileName}.`);
+        // Проверяем, есть ли URL изображения
+        if (!imageResponse.data.images || !imageResponse.data.images[frameId]) {
+          console.error(`Image URL not found for frame ${frameCount}. Skipping...`);
+          continue;
+        }
+
+        const imageUrl = imageResponse.data.images[frameId];
+        console.log(`Downloading image for frame ${frameCount} from: ${imageUrl}`);
+
+        // Шаг 3: Скачиваем изображение
+        const imageDownload = await axios({
+          url: imageUrl,
+          responseType: 'arraybuffer',
+        });
+
+        // Сохраняем изображение в файл
+        const fileName = `frame-${frameCount}-${frame.name.replace(/\s+/g, '-').toLowerCase()}.png`;
+        fs.writeFileSync(fileName, imageDownload.data);
+        console.log(`Image saved as ${fileName}.`);
+      }
+    }
+
+    if (frameCount === 0) {
+      throw new Error('No frames found in the Figma file.');
     }
   } catch (error) {
     console.error('Error exporting resources:', error.message);
