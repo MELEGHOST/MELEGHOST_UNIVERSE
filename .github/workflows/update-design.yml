@@ -18,24 +18,31 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
+          echo "SSH key setup complete."
 
-      # Шаг 2: Клонирование репозитория
+      # Шаг 2: Тестирование SSH-ключа
+      - name: Test SSH connection
+        run: |
+          echo "Testing SSH connection to GitHub..."
+          ssh -T git@github.com || echo "SSH connection failed."
+
+      # Шаг 3: Клонирование репозитория
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Шаг 3: Установка Node.js
+      # Шаг 4: Установка Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # Шаг 4: Установка зависимостей
+      # Шаг 5: Установка зависимостей
       - name: Install dependencies
         run: npm install axios
 
-      # Шаг 5: Создание файла скрипта для Node.js
+      # Шаг 6: Создание файла скрипта для Node.js
       - name: Create Node.js script
         run: |
           cat <<EOF > export-resources.js
@@ -68,14 +75,14 @@ jobs:
           exportResources();
           EOF
 
-      # Шаг 6: Выполнение Node.js скрипта
+      # Шаг 7: Выполнение Node.js скрипта
       - name: Run Node.js script
         env:
           FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
           FIGMA_FILE_ID: ${{ secrets.FIGMA_FILE_ID }}
         run: node export-resources.js
 
-      # Шаг 7: Коммит изменений
+      # Шаг 8: Коммит изменений
       - name: Commit changes
         run: |
           git config --global user.name "GitHub Actions"
