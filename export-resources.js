@@ -1,9 +1,11 @@
 const axios = require('axios');
 const fs = require('fs');
 
+// Переменные окружения
 const FIGMA_TOKEN = process.env.FIGMA_TOKEN;
 const FIGMA_FILE_ID = process.env.FIGMA_FILE_ID;
 
+// Основная функция экспорта ресурсов
 const exportResources = async () => {
   try {
     console.log('Fetching data from Figma...');
@@ -13,7 +15,10 @@ const exportResources = async () => {
       headers: { 'X-Figma-Token': FIGMA_TOKEN },
     });
 
-    console.log('Figma file structure:', JSON.stringify(fileResponse.data, null, 2));
+    // Выводим только ключевую информацию о файле
+    console.log('Figma file loaded successfully.');
+    console.log(`File name: ${fileResponse.data.name}`);
+    console.log(`Last modified: ${fileResponse.data.lastModified}`);
 
     // Извлекаем все фреймы
     const frames = fileResponse.data.document.children.filter(child => child.type === 'CANVAS');
@@ -36,8 +41,6 @@ const exportResources = async () => {
           headers: { 'X-Figma-Token': FIGMA_TOKEN },
         }
       );
-
-      console.log(`Image export response for frame ${i + 1}:`, JSON.stringify(imageResponse.data, null, 2));
 
       // Проверяем, есть ли URL изображения
       if (!imageResponse.data.images || !imageResponse.data.images[frameId]) {
@@ -65,4 +68,5 @@ const exportResources = async () => {
   }
 };
 
+// Запускаем функцию
 exportResources();
