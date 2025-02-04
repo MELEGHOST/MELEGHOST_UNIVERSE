@@ -10,6 +10,7 @@
       text-align: center;
       margin: 0;
       padding: 0;
+      background-color: #f4f4f4;
     }
 
     .frame {
@@ -18,28 +19,96 @@
       max-width: 600px;
       border: 1px solid #ccc;
       padding: 10px;
+      background-color: #fff;
     }
 
     img {
       max-width: 100%;
       height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
   <h1>Mini App Design from Figma</h1>
 
-  <!-- Пример: Использование изображений из Figma -->
-  <div class="frame">
-    <h2>Header</h2>
-    <img src="frame-1-header.png" alt="Header Frame">
+  <!-- Приветственный экран -->
+  <div id="welcome-screen" class="frame">
+    <h2>Welcome Screen</h2>
+    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-1-welcome.png" alt="Welcome Frame">
+    <p>This is the welcome screen. Press a button to navigate to other frames.</p>
   </div>
 
-  <div class="frame">
-    <h2>Footer</h2>
-    <img src="frame-2-footer.png" alt="Footer Frame">
+  <!-- Меню -->
+  <div id="menu-screen" class="frame hidden">
+    <h2>Main Menu</h2>
+    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-2-menu.png" alt="Menu Frame">
+    <p>This is the main menu. From here, you can navigate to other sections like Schedule, Social Media, and Movies.</p>
   </div>
 
-  <!-- Добавьте остальные фреймы -->
+  <!-- Расписание -->
+  <div id="schedule-screen" class="frame hidden">
+    <h2>Schedule</h2>
+    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-3-schedule.png" alt="Schedule Frame">
+    <p>This is the schedule section. Here you can view upcoming events.</p>
+  </div>
+
+  <!-- Соцсети -->
+  <div id="social-screen" class="frame hidden">
+    <h2>Social Media</h2>
+    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-4-social.png" alt="Social Media Frame">
+    <p>This is the social media section. Connect with us on various platforms.</p>
+  </div>
+
+  <!-- Фильмы -->
+  <div id="movies-screen" class="frame hidden">
+    <h2>Movies</h2>
+    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-5-movies.png" alt="Movies Frame">
+    <p>This is the movies section. Explore our favorite films.</p>
+  </div>
+
+  <!-- Кнопки навигации -->
+  <div style="margin-top: 20px;">
+    <button onclick="showScreen('welcome-screen')">Welcome</button>
+    <button onclick="showScreen('menu-screen')">Menu</button>
+    <button onclick="showScreen('schedule-screen')">Schedule</button>
+    <button onclick="showScreen('social-screen')">Social Media</button>
+    <button onclick="showScreen('movies-screen')">Movies</button>
+  </div>
+
+  <script>
+    // Функция для переключения экранов
+    function showScreen(screenId) {
+      // Скрываем все экраны
+      document.querySelectorAll('.frame').forEach(frame => {
+        frame.classList.add('hidden');
+      });
+
+      // Показываем выбранный экран
+      const selectedScreen = document.getElementById(screenId);
+      if (selectedScreen) {
+        selectedScreen.classList.remove('hidden');
+      }
+    }
+
+    // По умолчанию показываем приветственный экран
+    window.onload = () => {
+      showScreen('welcome-screen');
+    };
+  </script>
 </body>
 </html>
