@@ -1,9 +1,11 @@
 const axios = require('axios');
 const fs = require('fs');
 
+// Переменные окружения
 const FIGMA_TOKEN = process.env.FIGMA_TOKEN;
 const FIGMA_FILE_ID = process.env.FIGMA_FILE_ID;
 
+// Основная функция экспорта ресурсов
 const exportResources = async () => {
   try {
     console.log('Fetching data from Figma...');
@@ -70,7 +72,7 @@ const exportResources = async () => {
         });
 
         // Сохраняем изображение в файл
-        const fileName = `frame-${frameCount}-${frame.name.replace(/\s+/g, '-').toLowerCase()}.png`;
+        const fileName = `frame-${frame.name.replace(/\s+/g, '-').toLowerCase()}.png`;
         fs.writeFileSync(fileName, imageDownload.data);
         console.log(`Image saved as ${fileName}.`);
       }
@@ -85,4 +87,5 @@ const exportResources = async () => {
   }
 };
 
+// Запускаем функцию
 exportResources();
