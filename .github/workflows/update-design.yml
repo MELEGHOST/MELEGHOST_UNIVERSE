@@ -1,9 +1,9 @@
 name: Update Mini App Design from Figma
 
 on:
-  workflow_dispatch: # Запуск вручную
   schedule:
-    - cron: '0 0 * * *' # Ежедневный запуск в полночь (UTC)
+    - cron: '*/5 * * * *' # Запуск каждые 5 минут
+  workflow_dispatch: # Возможность запуска вручную
 
 jobs:
   update-design:
