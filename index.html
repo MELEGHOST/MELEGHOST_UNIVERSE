@@ -14,7 +14,6 @@
     }
 
     .frame {
-      display: none; /* Все фреймы скрыты по умолчанию */
       margin: 20px auto;
       width: 80%;
       max-width: 600px;
@@ -39,55 +38,66 @@
   </style>
 </head>
 <body>
-  <h1>Mini App Design from Figma</h1>
-
   <!-- Приветственный экран -->
-  <div id="frame-welcome" class="frame" style="display: block;">
+  <div id="welcome-screen" class="frame">
     <h2>Welcome Screen</h2>
-    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-welcome.png" alt="Welcome Frame">
-    <button onclick="showFrame('frame-menu')">Go to Menu</button>
+    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-1-welcome.png" alt="Welcome Frame">
+    <button onclick="showMenu()">Go to Menu</button>
   </div>
 
-  <!-- Меню -->
-  <div id="frame-menu" class="frame">
-    <h2>Menu Screen</h2>
-    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-menu.png" alt="Menu Frame">
-    <button onclick="showFrame('frame-calendar')">Go to Calendar</button>
-    <button onclick="showFrame('frame-socials')">Go to Socials</button>
-    <button onclick="showFrame('frame-films')">Go to Films</button>
+  <!-- Главное меню -->
+  <div id="menu-screen" class="frame" style="display: none;">
+    <h2>Main Menu</h2>
+    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-3-menu.png" alt="Menu Frame">
+    <button onclick="showCalendar()">Go to Calendar</button>
+    <button onclick="showSocials()">Go to Socials</button>
+    <button onclick="showFilms()">Go to Films</button>
   </div>
 
   <!-- Расписание -->
-  <div id="frame-calendar" class="frame">
-    <h2>Calendar Screen</h2>
-    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-calendar.png" alt="Calendar Frame">
-    <button onclick="showFrame('frame-menu')">Back to Menu</button>
+  <div id="calendar-screen" class="frame" style="display: none;">
+    <h2>Calendar</h2>
+    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-5-calendar.png" alt="Calendar Frame">
+    <button onclick="showMenu()">Back to Menu</button>
   </div>
 
   <!-- Соцсети -->
-  <div id="frame-socials" class="frame">
-    <h2>Socials Screen</h2>
-    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-socials.png" alt="Socials Frame">
-    <button onclick="showFrame('frame-menu')">Back to Menu</button>
+  <div id="socials-screen" class="frame" style="display: none;">
+    <h2>Social Networks</h2>
+    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-4-socials.png" alt="Socials Frame">
+    <button onclick="showMenu()">Back to Menu</button>
   </div>
 
   <!-- Фильмы -->
-  <div id="frame-films" class="frame">
-    <h2>Films Screen</h2>
-    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-films.png" alt="Films Frame">
-    <button onclick="showFrame('frame-menu')">Back to Menu</button>
+  <div id="films-screen" class="frame" style="display: none;">
+    <h2>Films</h2>
+    <img src="https://raw.githubusercontent.com/MELEGHOST/MELEGHOST_UNIVERSE/main/frame-7-films.png" alt="Films Frame">
+    <button onclick="showMenu()">Back to Menu</button>
   </div>
 
   <script>
-    // Функция для переключения между фреймами
-    function showFrame(frameId) {
-      // Скрываем все фреймы
-      document.querySelectorAll('.frame').forEach(frame => {
-        frame.style.display = 'none';
-      });
+    // Функции для переключения экранов
+    function showMenu() {
+      document.getElementById('welcome-screen').style.display = 'none';
+      document.getElementById('menu-screen').style.display = 'block';
+      document.getElementById('calendar-screen').style.display = 'none';
+      document.getElementById('socials-screen').style.display = 'none';
+      document.getElementById('films-screen').style.display = 'none';
+    }
 
-      // Показываем выбранный фрейм
-      document.getElementById(frameId).style.display = 'block';
+    function showCalendar() {
+      document.getElementById('menu-screen').style.display = 'none';
+      document.getElementById('calendar-screen').style.display = 'block';
+    }
+
+    function showSocials() {
+      document.getElementById('menu-screen').style.display = 'none';
+      document.getElementById('socials-screen').style.display = 'block';
+    }
+
+    function showFilms() {
+      document.getElementById('menu-screen').style.display = 'none';
+      document.getElementById('films-screen').style.display = 'block';
     }
   </script>
 </body>
