@@ -183,18 +183,18 @@ jobs:
           git commit -m "Update version to $NEW_VERSION and CHANGELOG.md"
           git push origin main
 
-                      # Шаг 10: Удаление старых ранов workflow
+         # Шаг 10: Удаление старых ранов workflow
       - name: Delete old workflow runs
         run: |
           # Получаем все раны текущего workflow
           RUNS=$(gh api repos/MELEGHOST/MELEGHOST_UNIVERSE/actions/runs \
             --paginate \
-            --jq '.workflow_runs[] | select(.created_at < (now - 43200 | strftime("%Y-%m-%dT%H:%M:%SZ"))) | .id')
+            --jq '.workflow_runs[] | select(.created_at < (now - 21600 | strftime("%Y-%m-%dT%H:%M:%SZ"))) | .id')
 
           # Удаляем старые раны
           for RUN_ID in $RUNS; do
             echo "Deleting workflow run $RUN_ID"
-            gh api repos/MELEGHOST/MELEGHOST_UNIVERSE/actions/runs/$RUN_ID -X DELETE
+            gh api repos/MELEGHOST/MELEGHOST_UNIVERSE/actions/runs/$RUN_ID -X DELETE || echo "Run $RUN_ID not found or already deleted."
           done
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
