@@ -150,3 +150,12 @@ jobs:
             git commit -m "Automated update from Figma"
             git push origin main
           fi
+      # Шаг 8: Обновление CHANGELOG.md
+      - name: Update CHANGELOG.md
+        run: |
+          echo "## [$(date +'%Y-%m-%d')] - Automated Update" >> CHANGELOG.md
+          echo "- Updated frames from Figma." >> CHANGELOG.md
+          echo "- Fixed any issues with image paths." >> CHANGELOG.md
+          git add CHANGELOG.md
+          git commit -m "Update CHANGELOG.md"
+          git push origin main
