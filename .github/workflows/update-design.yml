@@ -14,8 +14,8 @@ jobs:
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed22519
+          chmod 600 ~/.ssh/id_ed22519
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
           echo "SSH key setup complete."
@@ -137,25 +137,37 @@ jobs:
           FIGMA_FILE_ID: ${{ secrets.FIGMA_FILE_ID }}
         run: node export-resources.js
 
-      # Шаг 7: Коммит изменений
-      - name: Commit changes
+      # Шаг 7: Обновление версии
+      - name: Update version
+        id: update_version
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git remote set-url origin git@github.com:MELEGHOST/MELEGHOST_UNIVERSE.git
-          git add .
-          if git diff --staged --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "Automated update from Figma"
-            git push origin main
-          fi
+          # Читаем текущую версию из файла .version
+          VERSION=$(cat .version)
+          echo "Current version: $VERSION"
+
+          # Разделяем версию на части
+          MAJOR=$(echo $VERSION | cut -d '.' -f 1)
+          MINOR=$(echo $VERSION | cut -d '.' -f 2)
+          PATCH=$(echo $VERSION | cut -d '.' -f 3)
+
+          # Увеличиваем PATCH на 1
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+
+          # Записываем новую версию в файл .version
+          echo "$NEW_VERSION" > .version
+          echo "New version: $NEW_VERSION"
+
+          # Выводим новую версию для использования в следующих шагах
+          echo "version=$NEW_VERSION" >> $GITHUB_ENV
+
       # Шаг 8: Обновление CHANGELOG.md
       - name: Update CHANGELOG.md
         run: |
-          echo "## [$(date +'%Y-%m-%d')] - Automated Update" >> CHANGELOG.md
+          NEW_VERSION=${{ env.version }}
+          echo "## [$NEW_VERSION] - $(date +'%Y-%m-%d')" >> CHANGELOG.md
           echo "- Updated frames from Figma." >> CHANGELOG.md
           echo "- Fixed any issues with image paths." >> CHANGELOG.md
-          git add CHANGELOG.md
-          git commit -m "Update CHANGELOG.md"
+          git add CHANGELOG.md .version
+          git commit -m "Update version to $NEW_VERSION and CHANGELOG.md"
           git push origin main
