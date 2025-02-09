@@ -228,3 +228,6 @@
 ## [ALFA 0.0.70] - 2025-02-09
 - Updated frames from Figma.
 - Fixed any issues with image paths.
+## [ALFA 0.0.71] - 2025-02-09
+- Updated frames from Figma.
+- Fixed any issues with image paths.
