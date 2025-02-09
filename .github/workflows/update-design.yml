@@ -14,8 +14,8 @@ jobs:
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed22519
-          chmod 600 ~/.ssh/id_ed22519
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
           echo "SSH key setup complete."
@@ -39,7 +39,7 @@ jobs:
       # Шаг 5: Создание файла скрипта для Node.js
       - name: Create Node.js script
         run: |
-          cat <<EOF > export-resources.js
+          cat <<EOF > scripts/export-resources.js
           const axios = require('axios');
           const fs = require('fs');
 
@@ -112,7 +112,7 @@ jobs:
                   });
 
                   // Сохраняем изображение в файл
-                  const fileName = \`frame-\${frameCount}-\${frame.name.replace(/\s+/g, '-').toLowerCase()}.png\`;
+                  const fileName = \`assets/frames/frame-\${frameCount}-\${frame.name.replace(/\s+/g, '-').toLowerCase()}.png\`;
                   fs.writeFileSync(fileName, imageDownload.data);
                   console.log(\`Image saved as \${fileName}.\`);
                 }
@@ -135,7 +135,7 @@ jobs:
         env:
           FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
           FIGMA_FILE_ID: ${{ secrets.FIGMA_FILE_ID }}
-        run: node export-resources.js
+        run: node scripts/export-resources.js
 
       # Шаг 7: Обновление версии
       - name: Update version
@@ -160,14 +160,14 @@ jobs:
 
           # Выводим новую версию для использования в следующих шагах
           echo "version=$NEW_VERSION" >> $GITHUB_ENV
-          
-                # Шаг 8: Настройка данных автора для Git
+
+      # Шаг 8: Настройка данных автора для Git
       - name: Configure Git user
         run: |
           git config --global user.name "MELEGHOST"
           git config --global user.email "actions@github.com"
 
-            # Шаг 9: Обновление CHANGELOG.md
+      # Шаг 9: Обновление CHANGELOG.md
       - name: Update CHANGELOG.md
         run: |
           NEW_VERSION="${{ env.version }}"
