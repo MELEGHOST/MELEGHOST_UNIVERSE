@@ -161,13 +161,18 @@ jobs:
           # Выводим новую версию для использования в следующих шагах
           echo "version=$NEW_VERSION" >> $GITHUB_ENV
 
-      # Шаг 8: Обновление CHANGELOG.md
+            # Шаг 8: Обновление CHANGELOG.md
       - name: Update CHANGELOG.md
         run: |
-          NEW_VERSION=${{ env.version }}
+          NEW_VERSION="${{ env.version }}"
+          echo "Current version: $NEW_VERSION"
+
+          # Добавляем новую запись в CHANGELOG.md
           echo "## [$NEW_VERSION] - $(date +'%Y-%m-%d')" >> CHANGELOG.md
           echo "- Updated frames from Figma." >> CHANGELOG.md
           echo "- Fixed any issues with image paths." >> CHANGELOG.md
+
+          # Коммит изменений
           git add CHANGELOG.md .version
           git commit -m "Update version to $NEW_VERSION and CHANGELOG.md"
           git push origin main
