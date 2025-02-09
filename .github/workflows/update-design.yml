@@ -160,8 +160,14 @@ jobs:
 
           # Выводим новую версию для использования в следующих шагах
           echo "version=$NEW_VERSION" >> $GITHUB_ENV
+          
+                # Шаг 8: Настройка данных автора для Git
+      - name: Configure Git user
+        run: |
+          git config --global user.name "MELEGHOST"
+          git config --global user.email "actions@github.com"
 
-            # Шаг 8: Обновление CHANGELOG.md
+            # Шаг 9: Обновление CHANGELOG.md
       - name: Update CHANGELOG.md
         run: |
           NEW_VERSION="${{ env.version }}"
