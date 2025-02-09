@@ -183,7 +183,7 @@ jobs:
           git commit -m "Update version to $NEW_VERSION and CHANGELOG.md"
           git push origin main
 
-                # Шаг 10: Удаление старых ранов workflow
+                      # Шаг 10: Удаление старых ранов workflow
       - name: Delete old workflow runs
         run: |
           # Получаем все раны текущего workflow
@@ -197,7 +197,7 @@ jobs:
             gh api repos/MELEGHOST/MELEGHOST_UNIVERSE/actions/runs/$RUN_ID -X DELETE
           done
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
                 # Шаг 11: Установка GitHub CLI
       - name: Install GitHub CLI
