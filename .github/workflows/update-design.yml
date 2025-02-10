@@ -4,11 +4,6 @@ on:
   schedule:
     - cron: '*/5 * * * *' # Автоматический запуск каждые 5 минут
   workflow_dispatch: # Ручной запуск
-    inputs:
-      update_version:
-        description: 'Обновить версию? (true/false)'
-        required: false
-        default: 'false'
 
 jobs:
   update-design:
@@ -29,6 +24,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
+          fetch-depth: 0 # Получаем полную историю коммитов
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       # Шаг 3: Установка Node.js
@@ -142,9 +138,26 @@ jobs:
           FIGMA_FILE_ID: ${{ secrets.FIGMA_FILE_ID }}
         run: node scripts/export-resources.js
 
-      # Шаг 7: Обновление версии (только при ручном запуске)
+      # Шаг 7: Анализ изменений
+      - name: Analyze changes
+        id: analyze_changes
+        run: |
+          # Получаем список изменённых файлов
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD | wc -l)
+          echo "Number of changed files: $CHANGED_FILES"
+
+          # Если изменено более 3 файлов, обновляем версию
+          if [ "$CHANGED_FILES" -gt 3 ]; then
+            echo "Significant changes detected. Updating version."
+            echo "update_version=true" >> $GITHUB_ENV
+          else
+            echo "Minor changes detected. Skipping version update."
+            echo "update_version=false" >> $GITHUB_ENV
+          fi
+
+      # Шаг 8: Обновление версии (если необходимо)
       - name: Update version
-        if: inputs.update_version == 'true'
+        if: env.update_version == 'true'
         id: update_version
         run: |
           # Читаем текущую версию из файла .version
@@ -167,15 +180,15 @@ jobs:
           # Выводим новую версию для использования в следующих шагах
           echo "version=$NEW_VERSION" >> $GITHUB_ENV
 
-      # Шаг 8: Настройка данных автора для Git
+      # Шаг 9: Настройка данных автора для Git
       - name: Configure Git user
         run: |
           git config --global user.name "MELEGHOST"
           git config --global user.email "actions@github.com"
 
-      # Шаг 9: Обновление CHANGELOG.md (только при ручном запуске)
+      # Шаг 10: Обновление CHANGELOG.md (если необходимо)
       - name: Update CHANGELOG.md
-        if: inputs.update_version == 'true'
+        if: env.update_version == 'true'
         run: |
           NEW_VERSION="${{ env.version }}"
           echo "Current version: $NEW_VERSION"
@@ -190,7 +203,7 @@ jobs:
           git commit -m "Обновить версию до $NEW_VERSION и CHANGELOG.md"
           git push origin main
 
-      # Шаг 10: Удаление старых ранов workflow
+      # Шаг 11: Удаление старых ранов workflow
       - name: Delete old workflow runs
         run: |
           # Получаем все раны текущего workflow
