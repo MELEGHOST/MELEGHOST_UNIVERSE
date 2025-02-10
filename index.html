@@ -44,15 +44,16 @@
     }
 
     /* Стиль кнопки старта */
-    .start-button {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, 20%); /* Смещение ниже центра */
-      width: 150px;
-      height: auto;
-      cursor: pointer;
-    }
+ .start-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 20%); /* Смещение ниже центра */
+  width: 150px;
+  height: auto;
+  cursor: pointer;
+  z-index: 10; /* Чтобы кнопка была поверх фрейма */
+}
 
     /* Стиль кнопок действий */
     .action-buttons {
