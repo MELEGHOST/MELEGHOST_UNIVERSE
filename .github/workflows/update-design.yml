@@ -175,6 +175,7 @@ jobs:
 
           # Записываем новую версию в файл .version
           echo "$NEW_VERSION" > .version
+          echo "## [$NEW_VERSION] - $(date +'%Y-%m-%d %H:%M')" >> CHANGELOG.md
           echo "New version: $NEW_VERSION"
 
           # Выводим новую версию для использования в следующих шагах
