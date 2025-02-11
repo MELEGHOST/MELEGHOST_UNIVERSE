@@ -70,7 +70,7 @@ const exportResources = async () => {
         });
 
         // Сохраняем изображение в файл
-        const fileName = `frame-${frameCount}-${frame.name.replace(/\s+/g, '-').toLowerCase()}.png`;
+        const fileName = `assets/frames/frame-${frameCount}-${frame.name.replace(/\s+/g, '-').toLowerCase()}.png`;
         fs.writeFileSync(fileName, imageDownload.data);
         console.log(`Image saved as ${fileName}.`);
       }
@@ -78,11 +78,3 @@ const exportResources = async () => {
 
     if (frameCount === 0) {
       throw new Error('No frames found in the Figma file.');
-    }
-  } catch (error) {
-    console.error('Error exporting resources:', error.message);
-    process.exit(1); // Завершаем выполнение с ошибкой
-  }
-};
-
-exportResources();
