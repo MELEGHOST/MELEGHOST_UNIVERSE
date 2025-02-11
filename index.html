@@ -18,11 +18,6 @@
       margin: 20px auto;
       width: 80%;
       max-width: 600px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      background-color: #fff;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
     }
 
     img {
@@ -41,18 +36,19 @@
       width: 50px;
       height: 50px;
       cursor: pointer;
+      z-index: 10; /* Чтобы кнопка была поверх фрейма */
     }
 
     /* Стиль кнопки старта */
     .start-button {
       position: absolute;
-      top: 50%;
+      top: 70%; /* Опустим ниже центра */
       left: 50%;
-      transform: translate(-50%, 90%); /* Ещё ниже центра */
+      transform: translate(-50%, -50%);
       width: 120px; /* Уменьшена на 20% */
       height: auto;
-      cursor: pointer;
       z-index: 10; /* Чтобы кнопка была поверх фрейма */
+      cursor: pointer;
     }
 
     /* Стиль кнопок действий */
@@ -68,6 +64,7 @@
       height: auto;
       cursor: pointer;
       transition: transform 0.2s ease;
+      z-index: 10; /* Чтобы кнопки были поверх фрейма */
     }
 
     .action-buttons img:hover {
@@ -78,5 +75,49 @@
 <body>
   <!-- Приветственный экран -->
   <div id="welcome-screen" class="frame">
-    <h2>Welcome Screen</h2>
     <img src="assets/frames/frame-1-welcome.png" alt="Welcome Frame">
+    <img class="start-button" src="assets/buttons/start button.png" alt="Start Button" onclick="showMenu()">
+  </div>
+
+  <!-- Главное меню -->
+  <div id="menu-screen" class="frame" style="display: none;">
+    <img class="profile-button" src="assets/buttons/profile.png" alt="Profile Button" onclick="showProfile()">
+    <img src="assets/frames/frame-3-menu.png" alt="Menu Frame">
+    <div class="action-buttons">
+      <img src="assets/buttons/calendar button.png" alt="Go to Calendar" onclick="showCalendar()">
+      <img src="assets/buttons/social button.png" alt="Go to Socials" onclick="showSocials()">
+      <img src="assets/buttons/film button.png" alt="Go to Films" onclick="showFilms()">
+    </div>
+  </div>
+
+  <!-- Расписание -->
+  <div id="calendar-screen" class="frame" style="display: none;">
+    <img class="profile-button" src="assets/buttons/profile.png" alt="Profile Button" onclick="showProfile()">
+    <img src="assets/frames/frame-5-calendar.png" alt="Calendar Frame">
+    <div class="action-buttons">
+      <img src="assets/buttons/menu button.png" alt="Back to Menu" onclick="showMenu()">
+    </div>
+  </div>
+
+  <!-- Соцсети -->
+  <div id="socials-screen" class="frame" style="display: none;">
+    <img class="profile-button" src="assets/buttons/profile.png" alt="Profile Button" onclick="showProfile()">
+    <img src="assets/frames/frame-4-socials.png" alt="Socials Frame">
+    <div class="action-buttons">
+      <img src="assets/buttons/menu button.png" alt="Back to Menu" onclick="showMenu()">
+    </div>
+  </div>
+
+  <!-- Фильмы -->
+  <div id="films-screen" class="frame" style="display: none;">
+    <img class="profile-button" src="assets/buttons/profile.png" alt="Profile Button" onclick="showProfile()">
+    <img src="assets/frames/frame-7-films.png" alt="Films Frame">
+    <div class="action-buttons">
+      <img src="assets/buttons/menu button.png" alt="Back to Menu" onclick="showMenu()">
+    </div>
+  </div>
+
+  <!-- Подключение JavaScript -->
+  <script src="scripts/app.js"></script>
+</body>
+</html>
