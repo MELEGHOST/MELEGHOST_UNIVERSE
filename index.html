@@ -53,14 +53,10 @@
 
     /* Стиль кнопок действий */
     .action-buttons {
-      position: absolute; /* Для позиционирования внутри фрейма */
-      top: 40%; /* Чуть выше центра */
-      left: 50%;
-      transform: translateX(-50%); /* Центрируем по горизонтали */
       display: flex;
-      flex-direction: column; /* Кнопки идут сверху вниз */
-      gap: 10px; /* Расстояние между кнопками */
-      z-index: 10; /* Чтобы кнопки были поверх фрейма */
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
     }
 
     .action-buttons img {
@@ -68,6 +64,7 @@
       height: auto;
       cursor: pointer;
       transition: transform 0.2s ease;
+      z-index: 10; /* Чтобы кнопки были поверх фрейма */
     }
 
     .action-buttons img:hover {
