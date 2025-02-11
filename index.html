@@ -12,12 +12,14 @@
       padding: 0;
       background-color: #f4f4f4;
     }
+
     .frame {
       position: relative; /* Для позиционирования кнопок */
       margin: 20px auto;
       width: 80%;
       max-width: 600px;
     }
+
     img {
       max-width: 100%;
       height: auto;
@@ -25,6 +27,7 @@
       margin: 0 auto;
       border-radius: 10px;
     }
+
     /* Стиль кнопки профиля */
     .profile-button {
       position: absolute;
@@ -35,6 +38,7 @@
       cursor: pointer;
       z-index: 10; /* Чтобы кнопка была поверх фрейма */
     }
+
     /* Стиль кнопки старта */
     .start-button {
       position: absolute;
@@ -46,6 +50,7 @@
       z-index: 10; /* Чтобы кнопка была поверх фрейма */
       cursor: pointer;
     }
+
     /* Стиль кнопок действий */
     .action-buttons {
       display: flex;
@@ -53,6 +58,7 @@
       gap: 10px;
       margin-top: 10px;
     }
+
     .action-buttons img {
       width: 100px;
       height: auto;
@@ -60,6 +66,7 @@
       transition: transform 0.2s ease;
       z-index: 10; /* Чтобы кнопки были поверх фрейма */
     }
+
     .action-buttons img:hover {
       transform: scale(1.1);
     }
@@ -115,22 +122,19 @@
     document.addEventListener('DOMContentLoaded', function () {
       console.log("DOM полностью загружен");
 
+      // Функция для скрытия всех экранов
+      function hideAllScreens() {
+        const screens = document.querySelectorAll('.frame');
+        screens.forEach(screen => {
+          screen.style.display = 'none';
+        });
+      }
+
       // Функция для перехода в главное меню
       function showMenu() {
-        console.log("Кнопка старта нажата!"); // Отладочное сообщение
-        try {
-          const welcomeScreen = document.getElementById('welcome-screen');
-          const menuScreen = document.getElementById('menu-screen');
-
-          if (welcomeScreen && menuScreen) {
-            welcomeScreen.style.display = 'none';
-            menuScreen.style.display = 'block';
-          } else {
-            console.error("Элементы welcome-screen или menu-screen не найдены!");
-          }
-        } catch (error) {
-          console.error("Ошибка при обработке клика:", error.message);
-        }
+        console.log("Переход в главное меню");
+        hideAllScreens();
+        document.getElementById('menu-screen').style.display = 'block';
       }
 
       // Функция для перехода в профиль
@@ -140,19 +144,22 @@
 
       // Функция для перехода в расписание
       function showCalendar() {
-        document.getElementById('menu-screen').style.display = 'none';
+        console.log("Переход в расписание");
+        hideAllScreens();
         document.getElementById('calendar-screen').style.display = 'block';
       }
 
       // Функция для перехода в соцсети
       function showSocials() {
-        document.getElementById('menu-screen').style.display = 'none';
+        console.log("Переход в соцсети");
+        hideAllScreens();
         document.getElementById('socials-screen').style.display = 'block';
       }
 
       // Функция для перехода в фильмы
       function showFilms() {
-        document.getElementById('menu-screen').style.display = 'none';
+        console.log("Переход в фильмы");
+        hideAllScreens();
         document.getElementById('films-screen').style.display = 'block';
       }
 
