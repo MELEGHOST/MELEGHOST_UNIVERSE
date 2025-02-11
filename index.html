@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mini App</title>
+  <title>Streamer App</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
       margin: 0;
       padding: 0;
       background-color: #f4f4f4;
     }
 
     .frame {
-      position: relative; /* Для позиционирования кнопок */
+      position: relative;
       margin: 20px auto;
       width: 80%;
       max-width: 600px;
+      display: none;
     }
 
     img {
@@ -28,73 +28,64 @@
       border-radius: 10px;
     }
 
-    /* Стиль кнопки профиля */
-    .profile-button {
+    /* Кнопки */
+    .start-button, .profile-button, .back-button {
       position: absolute;
-      top: 10px;
-      left: 10px;
       width: 50px;
       height: 50px;
       cursor: pointer;
-      z-index: 10; /* Чтобы кнопка была поверх фрейма */
+      z-index: 10;
     }
 
-    /* Стиль кнопки старта */
     .start-button {
-      position: absolute;
-      top: 70%; /* Опустим ниже центра */
+      top: 70%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 120px; /* Уменьшена на 20% */
-      height: auto;
-      z-index: 10; /* Чтобы кнопка была поверх фрейма */
-      cursor: pointer;
     }
 
-    /* Стиль кнопок действий */
-    .action-buttons {
-      position: absolute; /* Для позиционирования внутри фрейма */
-      top: 40%; /* Чуть выше центра */
-      left: 50%;
-      transform: translateX(-50%); /* Центрируем по горизонтали */
-      display: flex;
-      flex-direction: column; /* Кнопки идут сверху вниз */
-      gap: 10px; /* Расстояние между кнопками */
-      z-index: 10; /* Чтобы кнопки были поверх фрейма */
-    }
-
-    .action-buttons img {
-      width: 100px;
-      height: auto;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-
-    .action-buttons img:hover {
-      transform: scale(1.1);
-    }
-
-    /* Стиль кнопки "Back to Menu" */
-    .back-button {
-      position: absolute;
+    .profile-button {
       top: 10px;
-      right: 10px; /* В правом верхнем углу */
-      width: 50px;
-      height: 50px;
+      left: 10px;
+    }
+
+    .back-button {
+      top: 10px;
+      right: 10px;
+    }
+
+    /* Формы */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input, button, textarea {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
       cursor: pointer;
-      z-index: 10; /* Чтобы кнопка была поверх фрейма */
+    }
+
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
   <!-- Приветственный экран -->
-  <div id="welcome-screen" class="frame">
+  <div id="welcome-screen" class="frame" style="display: block;">
     <img src="assets/frames/frame-1-welcome.png" alt="Welcome Frame">
     <img class="start-button" src="assets/buttons/start button.png" alt="Start Button" onclick="showMenu()">
   </div>
 
   <!-- Главное меню -->
-  <div id="menu-screen" class="frame" style="display: none;">
+  <div id="menu-screen" class="frame">
     <img class="profile-button" src="assets/buttons/profile.png" alt="Profile Button" onclick="showProfile()">
     <img src="assets/frames/frame-3-menu.png" alt="Menu Frame">
     <div class="action-buttons">
@@ -105,87 +96,52 @@
   </div>
 
   <!-- Расписание -->
-  <div id="calendar-screen" class="frame" style="display: none;">
+  <div id="calendar-screen" class="frame">
     <img class="profile-button" src="assets/buttons/profile.png" alt="Profile Button" onclick="showProfile()">
     <img src="assets/frames/frame-5-calendar.png" alt="Calendar Frame">
     <img class="back-button" src="assets/buttons/menu button.png" alt="Back to Menu" onclick="showMenu()">
   </div>
 
   <!-- Соцсети -->
-  <div id="socials-screen" class="frame" style="display: none;">
+  <div id="socials-screen" class="frame">
     <img class="profile-button" src="assets/buttons/profile.png" alt="Profile Button" onclick="showProfile()">
     <img src="assets/frames/frame-4-socials.png" alt="Socials Frame">
     <img class="back-button" src="assets/buttons/menu button.png" alt="Back to Menu" onclick="showMenu()">
   </div>
 
   <!-- Фильмы -->
-  <div id="films-screen" class="frame" style="display: none;">
+  <div id="films-screen" class="frame">
     <img class="profile-button" src="assets/buttons/profile.png" alt="Profile Button" onclick="showProfile()">
     <img src="assets/frames/frame-7-films.png" alt="Films Frame">
+    <div id="film-list"></div>
+    <button onclick="addFilm()">Добавить фильм</button>
     <img class="back-button" src="assets/buttons/menu button.png" alt="Back to Menu" onclick="showMenu()">
   </div>
 
-  <!-- Встроенный JavaScript -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      console.log("DOM полностью загружен");
+  <!-- Регистрация -->
+  <div id="register-screen" class="frame">
+    <h2>Регистрация</h2>
+    <form id="registerForm">
+      <input type="text" id="username" placeholder="Имя пользователя" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Пароль" required>
+      <label>
+        <input type="checkbox" id="isStreamer"> Я стример
+      </label>
+      <button type="submit">Зарегистрироваться</button>
+    </form>
+    <img class="back-button" src="assets/buttons/menu button.png" alt="Back to Menu" onclick="showMenu()">
+  </div>
 
-      // Функция для скрытия всех экранов
-      function hideAllScreens() {
-        const screens = document.querySelectorAll('.frame');
-        screens.forEach(screen => {
-          screen.style.display = 'none';
-        });
-      }
+  <!-- Рецензии -->
+  <div id="review-screen" class="frame">
+    <h2>Написать рецензию</h2>
+    <textarea id="review-text" placeholder="Введите текст рецензии"></textarea>
+    <button onclick="submitReview()">Отправить</button>
+    <img class="back-button" src="assets/buttons/menu button.png" alt="Back to Menu" onclick="showMenu()">
+  </div>
 
-      // Функция для перехода в главное меню
-      function showMenu() {
-        console.log("Переход в главное меню");
-        hideAllScreens();
-        document.getElementById('menu-screen').style.display = 'block';
-      }
-
-      // Функция для перехода в профиль
-      function showProfile() {
-        alert("Переход в профиль пользователя");
-      }
-
-      // Функция для перехода в расписание
-      function showCalendar() {
-        console.log("Переход в расписание");
-        hideAllScreens();
-        document.getElementById('calendar-screen').style.display = 'block';
-      }
-
-      // Функция для перехода в соцсети
-      function showSocials() {
-        console.log("Переход в соцсети");
-        hideAllScreens();
-        document.getElementById('socials-screen').style.display = 'block';
-      }
-
-      // Функция для перехода в фильмы
-      function showFilms() {
-        console.log("Переход в фильмы");
-        hideAllScreens();
-        document.getElementById('films-screen').style.display = 'block';
-      }
-
-      // Привязываем функции к глобальному объекту window
-      window.showMenu = showMenu;
-      window.showProfile = showProfile;
-      window.showCalendar = showCalendar;
-      window.showSocials = showSocials;
-      window.showFilms = showFilms;
-
-      // Альтернативный способ привязки события через addEventListener
-      const startButton = document.querySelector('.start-button');
-      if (startButton) {
-        startButton.addEventListener('click', showMenu);
-      } else {
-        console.error("Кнопка старта не найдена!");
-      }
-    });
-  </script>
+  <!-- JavaScript -->
+  <script src="scripts/app.js"></script>
 </body>
 </html>
