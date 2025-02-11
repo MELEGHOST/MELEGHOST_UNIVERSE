@@ -1,122 +1,93 @@
-require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 const cors = require('cors');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Подключение к MongoDB
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error(err));
+// Путь к файлу data.json
+const DATA_FILE = path.join(__dirname, 'data.json');
 
-// Модель пользователя
-const UserSchema = new mongoose.Schema({
-  username: String,
-  email: String,
-  password: String,
-  isStreamer: Boolean,
-  twitchId: String,
-  socials: {
-    twitter: String,
-    instagram: String,
-    youtube: String,
-  },
-  schedule: [{ date: Date, title: String }],
-  films: [{
-    title: String,
-    description: String,
-    streamerRating: Number,
-    viewerRatings: [Number],
-    reviews: [{ userId: mongoose.Schema.Types.ObjectId, text: String }],
-  }],
-});
+// Чтение данных из файла
+function readData() {
+  const rawData = fs.readFileSync(DATA_FILE);
+  return JSON.parse(rawData);
+}
 
-const User = mongoose.model('User', UserSchema);
+// Запись данных в файл
+function writeData(data) {
+  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+}
 
-// Регистрация
-app.post('/register', async (req, res) => {
+// Регистрация пользователя
+app.post('/register', (req, res) => {
   const { username, email, password, isStreamer } = req.body;
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, email, password: hashedPassword, isStreamer });
-    await user.save();
-    res.status(201).send('User registered');
-  } catch (error) {
-    res.status(500).send('Error registering user');
-  }
-});
+  const data = readData();
 
-// Авторизация
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).send('User not found');
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) return res.status(400).send('Invalid password');
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    res.json({ token });
-  } catch (error) {
-    res.status(500).send('Error logging in');
+  // Проверяем, существует ли пользователь с таким email
+  if (data.users.some(user => user.email === email)) {
+    return res.status(400).send('User already exists');
   }
+
+  // Добавляем нового пользователя
+  data.users.push({ username, email, password, isStreamer });
+  writeData(data);
+
+  res.send('User registered');
 });
 
 // Добавление фильма
-app.post('/add-film', async (req, res) => {
+app.post('/add-film', (req, res) => {
   const { title, description } = req.body;
-  try {
-    const user = await User.findOne({});
-    user.films.push({ title, description, streamerRating: null, viewerRatings: [], reviews: [] });
-    await user.save();
-    res.send('Film added');
-  } catch (error) {
-    res.status(500).send('Error adding film');
-  }
+  const data = readData();
+
+  // Добавляем новый фильм
+  data.films.push({
+    title,
+    description,
+    streamerRating: null,
+    viewerRatings: [],
+    reviews: [],
+  });
+  writeData(data);
+
+  res.send('Film added');
 });
 
 // Оценка фильма
-app.post('/rate-film', async (req, res) => {
+app.post('/rate-film', (req, res) => {
   const { filmId, rating } = req.body;
-  try {
-    const user = await User.findOne({ 'films._id': filmId });
-    if (!user) return res.status(400).send('Film not found');
-    const film = user.films.id(filmId);
-    film.viewerRatings.push(rating);
-    await user.save();
-    res.send('Film rated');
-  } catch (error) {
-    res.status(500).send('Error rating film');
-  }
+  const data = readData();
+
+  const film = data.films.find(film => film.title === filmId);
+  if (!film) return res.status(400).send('Film not found');
+
+  film.viewerRatings.push(rating);
+  writeData(data);
+
+  res.send('Film rated');
 });
 
 // Написание рецензии
-app.post('/add-review', async (req, res) => {
+app.post('/add-review', (req, res) => {
   const { filmId, reviewText } = req.body;
-  try {
-    const user = await User.findOne({ 'films._id': filmId });
-    if (!user) return res.status(400).send('Film not found');
-    const film = user.films.id(filmId);
-    film.reviews.push({ userId: 'viewerId', text: reviewText });
-    await user.save();
-    res.send('Review added');
-  } catch (error) {
-    res.status(500).send('Error adding review');
-  }
+  const data = readData();
+
+  const film = data.films.find(film => film.title === filmId);
+  if (!film) return res.status(400).send('Film not found');
+
+  film.reviews.push({ text: reviewText });
+  writeData(data);
+
+  res.send('Review added');
 });
 
 // Получение фильмов
-app.get('/films', async (req, res) => {
-  try {
-    const user = await User.findOne({});
-    res.json(user.films);
-  } catch (error) {
-    res.status(500).send('Error fetching films');
-  }
+app.get('/films', (req, res) => {
+  const data = readData();
+  res.json(data.films);
 });
 
 // Запуск сервера
