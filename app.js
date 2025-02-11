@@ -4,11 +4,16 @@ function showProfile() {
   // Здесь можно добавить логику для перехода в профиль
 }
 
-function showMenu() {
-  console.log("Кнопка старта нажата!"); // Отладочное сообщение
-  document.getElementById('welcome-screen').style.display = 'none';
-  document.getElementById('menu-screen').style.display = 'block';
-}
+document.addEventListener('DOMContentLoaded', function () {
+  function showMenu() {
+    console.log("Кнопка старта нажата!"); // Отладочное сообщение
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('menu-screen').style.display = 'block';
+  }
+
+  // Привязываем функцию к глобальному объекту window
+  window.showMenu = showMenu;
+});
 
 function showCalendar() {
   document.getElementById('menu-screen').style.display = 'none';
