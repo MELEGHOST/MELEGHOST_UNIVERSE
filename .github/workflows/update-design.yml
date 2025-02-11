@@ -1,221 +1,123 @@
-name: Update Mini App Design from Figma
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
 
-on:
-  schedule:
-    - cron: '*/5 * * * *' # Автоматический запуск каждые 5 минут
-  workflow_dispatch: # Ручной запуск
+    .frame {
+      position: relative; /* Для позиционирования кнопок */
+      margin: 20px auto;
+      width: 80%;
+      max-width: 600px;
+    }
 
-jobs:
-  update-design:
-    runs-on: ubuntu-latest
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 10px;
+    }
 
-    steps:
-      # Шаг 1: Настройка SSH-ключа
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-          echo "SSH key setup complete."
+    /* Стиль кнопки профиля */
+    .profile-button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      z-index: 10; /* Чтобы кнопка была поверх фрейма */
+    }
 
-      # Шаг 2: Клонирование репозитория
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Получаем полную историю коммитов
-          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    /* Стиль кнопки старта */
+    .start-button {
+      position: absolute;
+      top: 70%; /* Опустим ниже центра */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px; /* Уменьшена на 20% */
+      height: auto;
+      z-index: 10; /* Чтобы кнопка была поверх фрейма */
+      cursor: pointer;
+    }
 
-      # Шаг 3: Установка Node.js
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+    /* Стиль кнопок действий */
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
 
-      # Шаг 4: Установка зависимостей
-      - name: Install dependencies
-        run: npm install axios
+    .action-buttons img {
+      width: 100px;
+      height: auto;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      z-index: 10; /* Чтобы кнопки были поверх фрейма */
+    }
 
-      # Шаг 5: Создание файла скрипта для Node.js
-      - name: Create Node.js script
-        run: |
-          cat <<EOF > scripts/export-resources.js
-          const axios = require('axios');
-          const fs = require('fs');
+    .action-buttons img:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <!-- Приветственный экран -->
+  <div id="welcome-screen" class="frame">
+    <img src="assets/frames/frame-1-welcome.png" alt="Welcome Frame">
+    <img class="start-button" src="assets/buttons/start button.png" alt="Start Button" onclick="showMenu()">
+  </div>
 
-          const FIGMA_TOKEN = process.env.FIGMA_TOKEN;
-          const FIGMA_FILE_ID = process.env.FIGMA_FILE_ID;
+  <!-- Главное меню -->
+  <div id="menu-screen" class="frame" style="display: none;">
+    <img class="profile-button" src="assets/buttons/profile.png" alt="Profile Button" onclick="showProfile()">
+    <img src="assets/frames/frame-3-menu.png" alt="Menu Frame">
+    <div class="action-buttons">
+      <img src="assets/buttons/calendar button.png" alt="Go to Calendar" onclick="showCalendar()">
+      <img src="assets/buttons/social button.png" alt="Go to Socials" onclick="showSocials()">
+      <img src="assets/buttons/film button.png" alt="Go to Films" onclick="showFilms()">
+    </div>
+  </div>
 
-          const exportResources = async () => {
-            try {
-              console.log('Fetching data from Figma...');
+  <!-- Расписание -->
+  <div id="calendar-screen" class="frame" style="display: none;">
+    <img class="profile-button" src="assets/buttons/profile.png" alt="Profile Button" onclick="showProfile()">
+    <img src="assets/frames/frame-5-calendar.png" alt="Calendar Frame">
+    <div class="action-buttons">
+      <img src="assets/buttons/menu button.png" alt="Back to Menu" onclick="showMenu()">
+    </div>
+  </div>
 
-              // Шаг 1: Получаем структуру файла
-              const fileResponse = await axios.get(\`https://api.figma.com/v1/files/\${FIGMA_FILE_ID}\`, {
-                headers: { 'X-Figma-Token': FIGMA_TOKEN },
-              });
+  <!-- Соцсети -->
+  <div id="socials-screen" class="frame" style="display: none;">
+    <img class="profile-button" src="assets/buttons/profile.png" alt="Profile Button" onclick="showProfile()">
+    <img src="assets/frames/frame-4-socials.png" alt="Socials Frame">
+    <div class="action-buttons">
+      <img src="assets/buttons/menu button.png" alt="Back to Menu" onclick="showMenu()">
+    </div>
+  </div>
 
-              console.log('Figma file loaded successfully.');
-              console.log(\`File name: \${fileResponse.data.name}\`);
-              console.log(\`Last modified: \${fileResponse.data.lastModified}\`);
+  <!-- Фильмы -->
+  <div id="films-screen" class="frame" style="display: none;">
+    <img class="profile-button" src="assets/buttons/profile.png" alt="Profile Button" onclick="showProfile()">
+    <img src="assets/frames/frame-7-films.png" alt="Films Frame">
+    <div class="action-buttons">
+      <img src="assets/buttons/menu button.png" alt="Back to Menu" onclick="showMenu()">
+    </div>
+  </div>
 
-              // Извлекаем все страницы
-              const pages = fileResponse.data.document.children.filter(child => child.type === 'CANVAS');
-              console.log(\`Found \${pages.length} pages.\`);
-
-              if (pages.length === 0) {
-                throw new Error('No pages found in the Figma file.');
-              }
-
-              let frameCount = 0; // Счётчик фреймов
-
-              // Проходимся по всем страницам
-              for (const page of pages) {
-                console.log(\`Processing page: \${page.name}\`);
-
-                // Извлекаем все фреймы на странице
-                const frames = page.children.filter(child => child.type === 'FRAME');
-                console.log(\`Found \${frames.length} frames on page \${page.name}.\`);
-
-                if (frames.length === 0) {
-                  console.log(\`No frames found on page \${page.name}. Skipping...\`);
-                  continue;
-                }
-
-                // Проходимся по всем фреймам
-                for (const frame of frames) {
-                  frameCount++;
-                  const frameId = frame.id;
-                  console.log(\`Processing frame \${frameCount}: ID=\${frameId}, Name=\${frame.name}\`);
-
-                  // Шаг 2: Экспорт изображения фрейма
-                  const imageResponse = await axios.get(
-                    \`https://api.figma.com/v1/images/\${FIGMA_FILE_ID}?ids=\${frameId}&format=png\`,
-                    {
-                      headers: { 'X-Figma-Token': FIGMA_TOKEN },
-                    }
-                  );
-
-                  // Проверяем, есть ли URL изображения
-                  if (!imageResponse.data.images || !imageResponse.data.images[frameId]) {
-                    console.error(\`Image URL not found for frame \${frameCount}. Skipping...\`);
-                    continue;
-                  }
-
-                  const imageUrl = imageResponse.data.images[frameId];
-                  console.log(\`Downloading image for frame \${frameCount} from: \${imageUrl}\`);
-
-                  // Шаг 3: Скачиваем изображение
-                  const imageDownload = await axios({
-                    url: imageUrl,
-                    responseType: 'arraybuffer',
-                  });
-
-                  // Сохраняем изображение в файл
-                  const fileName = \`assets/frames/frame-\${frameCount}-\${frame.name.replace(/\s+/g, '-').toLowerCase()}.png\`;
-                  fs.writeFileSync(fileName, imageDownload.data);
-                  console.log(\`Image saved as \${fileName}.\`);
-                }
-              }
-
-              if (frameCount === 0) {
-                throw new Error('No frames found in the Figma file.');
-              }
-            } catch (error) {
-              console.error('Error exporting resources:', error.message);
-              process.exit(1); // Завершаем выполнение с ошибкой
-            }
-          };
-
-          exportResources();
-          EOF
-
-      # Шаг 6: Выполнение Node.js скрипта
-      - name: Run Node.js script
-        env:
-          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
-          FIGMA_FILE_ID: ${{ secrets.FIGMA_FILE_ID }}
-        run: node scripts/export-resources.js
-
-      # Шаг 7: Анализ изменений
-      - name: Analyze changes
-        id: analyze_changes
-        run: |
-          # Получаем список изменённых файлов
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD | wc -l)
-          echo "Number of changed files: $CHANGED_FILES"
-
-          # Если изменено более 3 файлов, обновляем версию
-          if [ "$CHANGED_FILES" -gt 3 ]; then
-            echo "Significant changes detected. Updating version."
-            echo "update_version=true" >> $GITHUB_ENV
-          else
-            echo "Minor changes detected. Skipping version update."
-            echo "update_version=false" >> $GITHUB_ENV
-          fi
-
-      # Шаг 8: Обновление версии (если необходимо)
-      - name: Update version
-        if: env.update_version == 'true'
-        id: update_version
-        run: |
-          # Читаем текущую версию из файла .version
-          VERSION=$(cat .version)
-          echo "Current version: $VERSION"
-
-          # Разделяем версию на части
-          MAJOR=$(echo $VERSION | cut -d '.' -f 1)
-          MINOR=$(echo $VERSION | cut -d '.' -f 2)
-          PATCH=$(echo $VERSION | cut -d '.' -f 3)
-
-          # Увеличиваем PATCH на 1
-          NEW_PATCH=$((PATCH + 1))
-          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
-
-          # Записываем новую версию в файл .version
-          echo "$NEW_VERSION" > .version
-          echo "## [$NEW_VERSION] - $(date +'%Y-%m-%d %H:%M')" >> CHANGELOG.md
-          echo "New version: $NEW_VERSION"
-
-          # Выводим новую версию для использования в следующих шагах
-          echo "version=$NEW_VERSION" >> $GITHUB_ENV
-
-      # Шаг 9: Настройка данных автора для Git
-      - name: Configure Git user
-        run: |
-          git config --global user.name "MELEGHOST"
-          git config --global user.email "actions@github.com"
-
-      # Шаг 10: Обновление CHANGELOG.md (если необходимо)
-      - name: Update CHANGELOG.md
-        if: env.update_version == 'true'
-        run: |
-          NEW_VERSION="${{ env.version }}"
-          echo "Current version: $NEW_VERSION"
-
-          # Добавляем новую запись в CHANGELOG.md
-          echo "## [$NEW_VERSION] - $(date +'%Y-%m-%d')" >> CHANGELOG.md
-          echo "- Обновлены фреймы из Figma." >> CHANGELOG.md
-          echo "- Исправлены проблемы с путями к изображениям." >> CHANGELOG.md
-
-          # Коммит изменений
-          git add CHANGELOG.md .version
-          git commit -m "Обновить версию до $NEW_VERSION и CHANGELOG.md"
-          git push origin main
-
-      # Шаг 11: Удаление старых ранов workflow
-      - name: Delete old workflow runs
-        run: |
-          # Получаем все раны текущего workflow
-          RUNS=$(gh api repos/MELEGHOST/MELEGHOST_UNIVERSE/actions/runs \
-            --paginate \
-            --jq '.workflow_runs[] | select(.created_at < (now - 21600 | strftime("%Y-%m-%dT%H:%M:%SZ"))) | .id')
-
-          # Удаляем старые раны
-          for RUN_ID in $RUNS; do
-            echo "Deleting workflow run $RUN_ID"
-            gh api repos/MELEGHOST/MELEGHOST_UNIVERSE/actions/runs/$RUN_ID -X DELETE || echo "Run $RUN_ID not found or already deleted."
-          done
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+  <!-- Подключение JavaScript -->
+  <script src="scripts/app.js"></script>
+</body>
+</html>
