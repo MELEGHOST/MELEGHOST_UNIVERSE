@@ -1,8 +1,8 @@
 const axios = require('axios');
 const fs = require('fs');
 
-const FIGMA_TOKEN = process.env.FIGMA_TOKEN;
-const FIGMA_FILE_ID = process.env.FIGMA_FILE_ID;
+const FIGMA_TOKEN = process.env.FIGMA_TOKEN; // Токен Figma
+const FIGMA_FILE_ID = process.env.FIGMA_FILE_ID; // ID файла Figma
 
 const exportResources = async () => {
   try {
@@ -78,3 +78,11 @@ const exportResources = async () => {
 
     if (frameCount === 0) {
       throw new Error('No frames found in the Figma file.');
+    }
+  } catch (error) {
+    console.error('Error exporting resources:', error.message);
+    process.exit(1); // Завершаем выполнение с ошибкой
+  }
+};
+
+exportResources();
